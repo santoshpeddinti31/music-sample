@@ -1,3 +1,5 @@
+const button = document.querySelector(".btn");
+const country = document.querySelector(".content");
 const renderCountry = function (data) {
   const html = `
 
@@ -19,9 +21,17 @@ const renderCountry = function (data) {
   document.querySelector(".content").insertAdjacentHTML("beforeend", html);
 };
 
+// Error for status of api
+
+const renderError = function (msg) {
+  country.insertAdjacentText("beforeend", msg);
+};
+
 //function for country data
 
 const getCountryData = function (country) {
+  //
+  //
   // country -1
 
   fetch(`https://restcountries.com/v3.1/name/${country}`)
@@ -38,6 +48,18 @@ const getCountryData = function (country) {
       return fetch(`https://restcountries.com/v3.1/alpha/${second}`);
     })
     .then((response) => response.json())
-    .then(([data1]) => renderCountry(data1));
+    .then(([data1]) => renderCountry(data1))
+    .catch((err) => {
+      //only show the api erro problem
+      renderError(`Something went wrong 🎆🎆 ${err.message}. Try again!`);
+    })
+    .finally(() => {
+      //the finally method will show the erro problem of entire method
+      document.querySelector(".content").style.opacity = 1;
+    });
 };
-getCountryData("bharat");
+
+button.addEventListener("click", function () {
+  getCountryData("bharat");
+  button.style.opacity = 0;
+});
