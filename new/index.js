@@ -27,6 +27,15 @@ const renderError = function (msg) {
   country.insertAdjacentText("beforeend", msg);
 };
 
+//antoher functio
+
+const getJson = function (url, errorMsg) {
+  return fetch(url).then((response) => {
+    if (!response.ok) throw new Error(`${errorMsg} (${response.status})`);
+    return response.json();
+  });
+};
+
 //function for country data
 
 const getCountryData = function (country) {
@@ -34,24 +43,26 @@ const getCountryData = function (country) {
   //
   // country -1
 
-  fetch(`https://restcountries.com/v3.1/name/${country}`)
-    .then((response) => response.json())
+  getJson(`https://restcountries.com/v3.1/name/${country}`, "Country not found")
     .then(([data]) => {
       renderCountry(data);
-
+      console.log(data);
       //country-2
 
       const second = data.borders[0];
 
       if (!second) return;
 
-      return fetch(`https://restcountries.com/v3.1/alpha/${second}`);
+      return getJson(
+        `https://restcountries.com/v3.1/alpha/${second}`,
+        " country Not Found"
+      );
     })
-    .then((response) => response.json())
     .then(([data1]) => renderCountry(data1))
     .catch((err) => {
+      console.error(`${err}🎆🎆🎆`);
       //only show the api erro problem
-      renderError(`Something went wrong 🎆🎆 ${err.message}. Try again!`);
+      renderError(`Something went wrong🎆🎆🎆 ${err.message}. Try again!`);
     })
     .finally(() => {
       //the finally method will show the erro problem of entire method
@@ -60,6 +71,7 @@ const getCountryData = function (country) {
 };
 
 button.addEventListener("click", function () {
-  getCountryData("bharat");
+  getCountryData("usa");
   button.style.opacity = 0;
 });
+getCountryData("usaa");
