@@ -1,6 +1,6 @@
 const renderCountry = function (data) {
   const html = `
-    
+
   <article class="message">
      <img class='photo' src="${data.flags.png}" />
      <div class='country_data'>
@@ -19,34 +19,25 @@ const renderCountry = function (data) {
   document.querySelector(".content").insertAdjacentHTML("beforeend", html);
 };
 
-function getCountry(country) {
-  const request = new XMLHttpRequest();
+//function for country data
 
-  request.open("GET", `https://restcountries.com/v3.1/name/${country}`);
+const getCountryData = function (country) {
+  // country -1
 
-  request.send();
+  fetch(`https://restcountries.com/v3.1/name/${country}`)
+    .then((response) => response.json())
+    .then(([data]) => {
+      renderCountry(data);
 
-  request.addEventListener("load", function () {
-    const [data] = JSON.parse(this.responseText);
-    renderCountry(data);
-    console.log(data);
+      //country-2
 
-    const [second] = data.borders;
+      const second = data.borders[0];
 
-    if (!second) return;
+      if (!second) return;
 
-    //ajax call country -2
-
-    const request2 = new XMLHttpRequest();
-    request2.open("GET", `https://restcountries.com/v3.1/alpha/${second}`);
-    request2.send();
-
-    request2.addEventListener("load", function () {
-      const [data1] = JSON.parse(this.responseText);
-      console.log(data1);
-
-      renderCountry(data1);
-    });
-  });
-}
-getCountry("norway");
+      return fetch(`https://restcountries.com/v3.1/alpha/${second}`);
+    })
+    .then((response) => response.json())
+    .then(([data1]) => renderCountry(data1));
+};
+getCountryData("bharat");
