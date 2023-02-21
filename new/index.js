@@ -1,80 +1,47 @@
-const button = document.querySelector(".btn");
-const country = document.querySelector(".content");
-const renderCountry = function (data) {
-  const html = `
+const cardData = document.querySelector(".card");
+const laharika = document.querySelector(".srinu");
 
-  <article class="message">
-     <img class='photo' src="${data.flags.png}" />
-     <div class='country_data'>
-        <h3 class="country_name">${data.name.common}</h3>
-        <h5 class="country_continent">${data.continents}</h5>
-        <p class="row"><span>👩🏼‍🤝‍👨🏻</span>${(data.population / 1000000).toFixed(
-          0
-        )} million</p>
-        <p class="row"><span>🗣️</span>${Object.values(data.languages)[0]}</p>
-        <p class="row"><span>💰</span>${
-          Object.values(data.currencies)[0].name
-        }</p>
+const opacity = document.querySelector(".container");
+const renderData = function (msg) {
+  const html = `<article class="music">
+  <img class="cover" src="${msg.tracks[0].album.images[0].url}" />
+  <h2><span>Artist: </span>${msg.tracks[0].artists[0].name}</h2>
+  <h5><span>Song: </span>${msg.tracks[0].name}</h5>
+  <h6><span>Duration: </span>${(msg.tracks[0].duration_ms / 100000).toFixed(
+    2
+  )}sec</h6>
 
-      </div>
-   </article>`;
-  document.querySelector(".content").insertAdjacentHTML("beforeend", html);
+  <div class="santhu">
+    <audio preload="metadata" controls  src="${
+      msg.tracks[0].preview_url
+    }"></audio>
+  </div>
+  
+</article>`;
+
+  cardData.insertAdjacentHTML("beforeend", html);
+
+  opacity.style.opacity = 1;
 };
 
-const renderError = function (msg) {
-  country.insertAdjacentText("beforeend", msg);
-};
+const getMusic = function () {
+  const req = new XMLHttpRequest();
 
-//present coordinates positon values
-
-const getPosition = function () {
-  return new Promise(function (resolve, reject) {
-    navigator.geolocation.getCurrentPosition(resolve, reject);
+  req.open(
+    "GET",
+    "https://spotify23.p.rapidapi.com/tracks/?ids=4WNcduiCmDNfmTEz7JvmLv"
+  );
+  req.setRequestHeader(
+    "X-RapidAPI-Key",
+    "c61f4f31ebmsh90cc43b2e524413p1c4e41jsn9b4eecabc048"
+  );
+  req.setRequestHeader("X-RapidAPI-Host", "spotify23.p.rapidapi.com");
+  req.setRequestHeader("X-RapidAPI-Host", "spotify23.p.rapidapi.com");
+  req.send();
+  req.addEventListener("load", function () {
+    const data = JSON.parse(this.responseText);
+    console.log(data);
+    renderData(data);
   });
 };
-
-const whereAmI = async function () {
-  //geo location
-  try {
-    const pos = await getPosition();
-    const { latitude: lat, longitude: lng } = pos.coords;
-
-    //reverse geocoding
-    const resGeo = await fetch(`https://geocode.xyz/${lat},${lng}?geoit=json`);
-    if (!resGeo.ok) throw new Error("Problem getting location data");
-    const dataGeo = await resGeo.json();
-    console.log(dataGeo);
-    //country data
-    const res = await fetch(
-      `https://restcountries.com/v3.1/name/${dataGeo.country}`
-    );
-
-    if (!res.ok) throw new Error("Problem getting country data");
-    const [data] = await res.json();
-    console.log(data);
-    renderCountry(data);
-  } catch (err) {
-    console.error(`${err} 🎆🎆🎆`);
-    renderError(` ${err.message}`);
-
-    throw err;
-  }
-};
-
-console.log("1: will get location");
-
-// whereAmI()
-//   .then((city) => console.log(`2:${city}`))
-//   .catch((err) => console.error(`2:${err.message} 🎆`))
-//   .finally(() => console.log("3:Finshed getting location"));
-// console.log("3:Finished getting location");
-
-(async function () {
-  try {
-    const city = await whereAmI();
-    console.log(`2:${city}`);
-  } catch (err) {
-    console.log(`2:${err.message} 🎆`);
-  }
-  console.log("3: Finished getting location");
-})();
+getMusic();
